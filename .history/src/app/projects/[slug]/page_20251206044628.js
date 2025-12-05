@@ -401,66 +401,60 @@ export default function ProductPage() {
       )}
 
       {/* -------------------------------- */}
-      {/* ADDITIONAL INFORMATION           */}
-      {/* -------------------------------- */}
-      {(
-        additionalInfo?.title ||
-        additionalInfo?.largeTitle ||
-        (Array.isArray(additionalInfo?.informations) &&
-        additionalInfo.informations.length > 0)
-      ) && (
-        <div className="additional-sec">
-          <div className="additional-outer">
-            <div className="container">
+{/* ADDITIONAL INFORMATION           */}
+{/* -------------------------------- */}
+{additionalInfo && (
+  <div className="additional-sec">
+    <div className="additional-outer">
+      <div className="container">
 
-              <TopHeadCnt
-                items={[
-                  {
-                    heading: additionalInfo?.title || "Additional Info",
-                    subHeading: additionalInfo?.largeTitle || "",
-                  },
-                ]}
-              />
+        <TopHeadCnt
+          items={[
+            {
+              heading: additionalInfo?.title || "Additional Info",
+              subHeading: additionalInfo?.largeTitle || "",
+            },
+          ]}
+        />
 
-              <div className="info-card-blk">
+        <div className="info-card-blk">
 
-                {Array.isArray(additionalInfo?.informations) &&
-                additionalInfo.informations.length > 0 ? (
-                  additionalInfo.informations.map((item, index) => (
-                    <div className="info-card" data-aos="fade-up" key={index}>
+          {Array.isArray(additionalInfo?.informations) &&
+          additionalInfo.informations.length > 0 ? (
+            additionalInfo.informations.map((item, index) => (
+              <div className="info-card" data-aos="fade-up" key={index}>
 
-                      <div className="point-cnt">
-                        <h6>{item?.title}</h6>
-                      </div>
+                <div className="point-cnt">
+                  <h6>{item?.title}</h6>
+                </div>
 
-                      {item?.image?.node?.sourceUrl && (
-                        <div className="info-img">
-                          <img
-                            src={item.image.node.sourceUrl}
-                            alt={item?.image?.node?.altText || ""}
-                          />
-                        </div>
-                      )}
-
-                      <div className="info-cnt">
-                        <p>
-                          {item?.description?.replace(/<\/?p>/g, "").trim()}
-                        </p>
-                      </div>
-
-                    </div>
-                  ))
-                ) : (
-                  <p>No additional info available.</p>
+                {item?.image?.node?.sourceUrl && (
+                  <div className="info-img">
+                    <img
+                      src={item.image.node.sourceUrl}
+                      alt={item?.image?.node?.altText || ""}
+                    />
+                  </div>
                 )}
 
+                <div className="info-cnt">
+                  <p>
+                    {item?.description?.replace(/<\/?p>/g, "").trim()}
+                  </p>
+                </div>
+
               </div>
+            ))
+          ) : (
+            <p>No additional info available.</p>
+          )}
 
-            </div>
-          </div>
         </div>
-      )}
 
+      </div>
+    </div>
+  </div>
+)}
 
 
       {/* -------------------------------- */}
