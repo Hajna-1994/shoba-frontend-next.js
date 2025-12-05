@@ -70,22 +70,6 @@ export async function getProjectBySlug(slug) {
               }
             }
 
-            additionalInformationsSection {
-              title
-              largeTitle
-              informations {
-                title
-                description
-                image {
-                  node {
-                    sourceUrl
-                    altText
-                  }
-                }
-              }
-            }
-
-
             nbrSec {
               title
               largeTitle
@@ -109,16 +93,6 @@ export async function getProjectBySlug(slug) {
                 }
               }
             }
-
-            faqSec {
-              title
-              largeTitle
-              faqs {
-                question
-                answer
-              }
-            }
-
 
           }
         }

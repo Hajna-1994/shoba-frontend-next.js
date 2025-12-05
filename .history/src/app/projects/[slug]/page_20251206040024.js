@@ -38,19 +38,17 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // -----------------------------------------
-  // Fetch Project Data + Init AOS
-  // -----------------------------------------
+  // Fetch + AOS
   useEffect(() => {
-    AOS.init({ duration: 1200 });
+    AOS.init({ duration: 1200, once: false, mirror: false });
 
     async function fetchData() {
       try {
         const data = await getProjectBySlug(slug);
         setProjectData(data.project);
+        setLoading(false);
       } catch (err) {
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     }
@@ -58,9 +56,7 @@ export default function ProductPage() {
     if (slug) fetchData();
   }, [slug]);
 
-  // -----------------------------------------
-  // FAQ Toggle
-  // -----------------------------------------
+  // FAQ toggle
   useEffect(() => {
     if (!projectData) return;
 
@@ -73,40 +69,30 @@ export default function ProductPage() {
       question.addEventListener("click", () => {
         faqItems.forEach((el) => {
           el.classList.remove("active");
-          const icon = el.querySelector(".toggle-icon");
-          if (icon) icon.textContent = "+";
+          el.querySelector(".toggle-icon").textContent = "+";
         });
 
         item.classList.add("active");
-        const icon = item.querySelector(".toggle-icon");
-        if (icon) icon.textContent = "×";
+        item.querySelector(".toggle-icon").textContent = "×";
       });
     });
   }, [projectData]);
 
-  // -----------------------------------------
-  // Loading / Error Handling
-  // -----------------------------------------
   if (loading) return <div>Loading project data...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!projectData) return <div>No project found</div>;
+  if (!projectData) return <div>Project not found</div>;
 
-  // -----------------------------------------
-  // Extract ACF Data
-  // -----------------------------------------
-  const acfData =
-    projectData?.singleProjectDetails?.singleProjectDetails || {};
+  // Data extraction
+  const { singleProjectDetails, featuredImage, title } = projectData;
+  const acfData = singleProjectDetails?.singleProjectDetails;
 
-  // Sections
   const amenities = acfData?.amenitiesSection;
   const nbr = acfData?.nbrSec;
   const gallery = acfData?.gallerySection;
   const additionalInfo = acfData?.additionalInformationsSection;
   const faqSection = acfData?.faqSec;
 
-  const featuredImage = projectData?.featuredImage;
-
-  // Section Checks
+  // Helper — check if section has at least one field
   const hasNeighbourhood =
     nbr?.title || nbr?.largeTitle || nbr?.contents || nbr?.image?.node?.sourceUrl;
 
@@ -129,9 +115,7 @@ export default function ProductPage() {
   return (
     <main>
 
-      {/* -------------------------------- */}
-      {/* SUB BANNER                       */}
-      {/* -------------------------------- */}
+      {/* SUB BANNER */}
       {(acfData?.banner?.image?.node?.sourceUrl ||
         acfData?.leftImage?.node?.sourceUrl ||
         featuredImage?.node?.sourceUrl) && (
@@ -143,74 +127,62 @@ export default function ProductPage() {
                 acfData?.leftImage?.node?.sourceUrl ||
                 featuredImage?.node?.sourceUrl
               }
-              alt={projectData?.title}
+              alt={title}
             />
             <div className="container">
               <div className="sub-bnr-txt">
-                <h1>{acfData?.banner?.title || projectData?.title}</h1>
+                <h1>{acfData?.banner?.title || title}</h1>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* -------------------------------- */}
-      {/* PROJECT INFORMATION              */}
-      {/* -------------------------------- */}
-      {(acfData?.leftImage?.node?.sourceUrl ||
-        (Array.isArray(acfData?.projectInformations) &&
-          acfData.projectInformations.length > 0)) && (
-        <div className="hurtland-sec">
-          <div className="hurtland-outer">
-            <div className="container">
-              <div className="property-blk">
+      {/* PROJECT INFORMATION */}
+      {Array.isArray(acfData?.projectInformations) &&
+        acfData.projectInformations.length > 0 && (
+          <div className="hurtland-sec">
+            <div className="hurtland-outer">
+              <div className="container">
+                <div className="property-blk">
 
-                {/* Left Image */}
-                {acfData?.leftImage?.node?.sourceUrl && (
-                  <div className="property-image">
-                    <img
-                      src={acfData.leftImage.node.sourceUrl}
-                      alt={projectData?.title}
-                    />
-                  </div>
-                )}
+                  {acfData?.leftImage?.node?.sourceUrl && (
+                    <div className="property-image">
+                      <img
+                        src={acfData.leftImage.node.sourceUrl}
+                        alt={title}
+                      />
+                    </div>
+                  )}
 
-                {/* Right Side Details */}
-                {(acfData?.rightLargeTitle ||
-                  (Array.isArray(acfData?.projectInformations) &&
-                    acfData.projectInformations.length > 0)) && (
                   <div className="property-details">
-                    <h2>{acfData?.rightLargeTitle || projectData?.title}</h2>
+                    <h2>{acfData?.rightLargeTitle || title}</h2>
 
-                    {Array.isArray(acfData?.projectInformations) &&
-                      acfData.projectInformations.length > 0 && (
-                        <div className="property-info">
-                          {acfData.projectInformations.map((info, index) => (
-                            <div key={index} className="info-item">
-                              <h3>{info.values}</h3>
-                              <p>{info.text}</p>
-                            </div>
-                          ))}
+                    <div className="property-info">
+                      {acfData.projectInformations.map((info, index) => (
+                        <div key={index} className="info-item">
+                          <h3>{info.values}</h3>
+                          <p>{info.text}</p>
                         </div>
-                      )}
-                  </div>
-                )}
+                      ))}
+                    </div>
 
+                  </div>
+
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* -------------------------------- */}
-      {/* NEARBY SECTION                   */}
-      {/* -------------------------------- */}
+      {/* NEARBY SECTION */}
       {Array.isArray(acfData?.locationTimes) &&
         acfData.locationTimes.length > 0 && (
           <div className="nearby-sec">
             <div className="nearby-outer">
               <div className="container">
                 <div className="nearby-blk">
+
                   {acfData.locationTimes.map((location, index) => (
                     <div key={index} className="location-card">
 
@@ -230,21 +202,21 @@ export default function ProductPage() {
 
                     </div>
                   ))}
+
                 </div>
               </div>
             </div>
           </div>
         )}
 
-      {/* -------------------------------- */}
-      {/* AMENITIES  ⭐ FIXED ⭐            */}
-      {/* -------------------------------- */}
-      {amenities && (
+      {/* AMENITIES */}
+      {(amenities?.title ||
+        amenities?.subTitleBold ||
+        (amenities?.sliderImages?.length > 0)) && (
         <div className="amenities-sec">
           <div className="amenities-outer">
 
-            {/* Title + Subtitle */}
-            {(amenities?.title || amenities?.subTitleBold) && (
+            {(amenities.title || amenities.subTitleBold) && (
               <div className="container">
                 <TopHeadCnt
                   items={[
@@ -257,58 +229,54 @@ export default function ProductPage() {
               </div>
             )}
 
-            {/* Slider */}
-            {Array.isArray(amenities?.sliderImages) &&
-              amenities.sliderImages.length > 0 && (
-                <div className="container amenities-container">
+            {amenities.sliderImages?.length > 0 && (
+              <div className="container amenities-container">
 
-                  <div className="swiper-top-nav">
-                    <div className="swiper-button-prev custom-nav-btn"></div>
-                    <div className="swiper-button-next custom-nav-btn"></div>
-                  </div>
-
-                  <Swiper
-                    modules={[Navigation, Pagination, Scrollbar]}
-                    slidesPerView={2.5}
-                    spaceBetween={20}
-                    navigation={{
-                      nextEl: ".swiper-button-next",
-                      prevEl: ".swiper-button-prev",
-                    }}
-                    scrollbar={{ el: ".swiper-scrollbar", draggable: true }}
-                    breakpoints={{
-                      0: { slidesPerView: 1 },
-                      650: { slidesPerView: 2 },
-                      800: { slidesPerView: 2.2 },
-                    }}
-                    className="amenitiesSwipper"
-                  >
-                    {amenities.sliderImages.map((item, index) => (
-                      <SwiperSlide key={index}>
-                        <div className="image-wrapper">
-                          {item?.image?.node?.sourceUrl && (
-                            <img
-                              src={item.image.node.sourceUrl}
-                              alt={item?.image?.node?.altText || ""}
-                            />
-                          )}
-                          <span className="image-label">{item.title}</span>
-                        </div>
-                        <p>{item.description}</p>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-
+                <div className="swiper-top-nav">
+                  <div className="swiper-button-prev custom-nav-btn"></div>
+                  <div className="swiper-button-next custom-nav-btn"></div>
                 </div>
-              )}
+
+                <Swiper
+                  modules={[Navigation, Pagination, Scrollbar]}
+                  slidesPerView={2.5}
+                  spaceBetween={20}
+                  navigation={{
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                  }}
+                  scrollbar={{ el: ".swiper-scrollbar", draggable: true }}
+                  breakpoints={{
+                    0: { slidesPerView: 1 },
+                    650: { slidesPerView: 2 },
+                    800: { slidesPerView: 2.2 },
+                  }}
+                  className="amenitiesSwipper"
+                >
+
+                  {amenities.sliderImages.map((item, index) => (
+                    <SwiperSlide key={index}>
+                      <div className="image-wrapper">
+                        <img
+                          src={item?.image?.node?.sourceUrl}
+                          alt={item?.image?.node?.altText || ""}
+                        />
+                        <span className="image-label">{item.title}</span>
+                      </div>
+                      <p>{item.description}</p>
+                    </SwiperSlide>
+                  ))}
+
+                </Swiper>
+
+              </div>
+            )}
 
           </div>
         </div>
       )}
 
-      {/* -------------------------------- */}
-      {/* NEIGHBOURHOOD                   */}
-      {/* -------------------------------- */}
+      {/* NEIGHBOURHOOD */}
       {hasNeighbourhood && (
         <div className="neighbourhood-sec">
           <div className="neighbourhood-outer">
@@ -326,23 +294,21 @@ export default function ProductPage() {
                 ]}
               />
 
-              {nbr?.image?.node?.sourceUrl && (
-                <div className="loc-img" data-aos="fade-up">
+              <div className="loc-img" data-aos="fade-up">
+                {nbr?.image?.node?.sourceUrl && (
                   <img
                     src={nbr.image.node.sourceUrl}
                     alt={nbr?.image?.node?.altText || ""}
                   />
-                </div>
-              )}
+                )}
+              </div>
 
             </div>
           </div>
         </div>
       )}
 
-      {/* -------------------------------- */}
-      {/* GALLERY                          */}
-      {/* -------------------------------- */}
+      {/* GALLERY */}
       {hasGallery && (
         <div className="gallery-sec">
           <div className="gallery-outer">
@@ -400,66 +366,60 @@ export default function ProductPage() {
         </div>
       )}
 
-      {/* -------------------------------- */}
-{/* ADDITIONAL INFORMATION           */}
-{/* -------------------------------- */}
-{additionalInfo && (
-  <div className="additional-sec">
-    <div className="additional-outer">
-      <div className="container">
+      {/* ADDITIONAL INFORMATION */}
+      {hasAdditionalInfo && (
+        <div className="additional-sec">
+          <div className="additional-outer">
+            <div className="container">
 
-        <TopHeadCnt
-          items={[
-            {
-              heading: additionalInfo?.title || "Additional Info",
-              subHeading: additionalInfo?.largeTitle || "",
-            },
-          ]}
-        />
+              <TopHeadCnt
+                items={[
+                  {
+                    heading: additionalInfo?.title || "Additional Info",
+                    subHeading: additionalInfo?.largeTitle || "",
+                  },
+                ]}
+              />
 
-        <div className="info-card-blk">
+              <div className="info-card-blk">
+                {additionalInfo?.informations?.length > 0 ? (
+                  additionalInfo.informations.map((item, index) => (
+                    <div className="info-card" data-aos="fade-up" key={index}>
 
-          {Array.isArray(additionalInfo?.informations) &&
-          additionalInfo.informations.length > 0 ? (
-            additionalInfo.informations.map((item, index) => (
-              <div className="info-card" data-aos="fade-up" key={index}>
+                      <div className="point-cnt">
+                        <h6>{item?.title}</h6>
+                      </div>
 
-                <div className="point-cnt">
-                  <h6>{item?.title}</h6>
-                </div>
+                      {item?.image?.node?.sourceUrl && (
+                        <div className="info-img">
+                          <img
+                            src={item.image.node.sourceUrl}
+                            alt={item?.image?.node?.altText || ""}
+                          />
+                        </div>
+                      )}
 
-                {item?.image?.node?.sourceUrl && (
-                  <div className="info-img">
-                    <img
-                      src={item.image.node.sourceUrl}
-                      alt={item?.image?.node?.altText || ""}
-                    />
-                  </div>
+                      <div className="info-cnt">
+                        <p>
+                          {item?.description
+                            ?.replace(/<\/?p>/g, "")
+                            .trim()}
+                        </p>
+                      </div>
+
+                    </div>
+                  ))
+                ) : (
+                  <p>No additional info available.</p>
                 )}
-
-                <div className="info-cnt">
-                  <p>
-                    {item?.description?.replace(/<\/?p>/g, "").trim()}
-                  </p>
-                </div>
-
               </div>
-            ))
-          ) : (
-            <p>No additional info available.</p>
-          )}
 
+            </div>
+          </div>
         </div>
+      )}
 
-      </div>
-    </div>
-  </div>
-)}
-
-
-      {/* -------------------------------- */}
-      {/* FAQ                              */}
-      {/* -------------------------------- */}
+      {/* FAQ */}
       {hasFAQ && (
         <section className="faq-section">
           <div className="faq-outer">

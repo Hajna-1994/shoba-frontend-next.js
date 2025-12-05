@@ -110,16 +110,6 @@ export async function getProjectBySlug(slug) {
               }
             }
 
-            faqSec {
-              title
-              largeTitle
-              faqs {
-                question
-                answer
-              }
-            }
-
-
           }
         }
       }
