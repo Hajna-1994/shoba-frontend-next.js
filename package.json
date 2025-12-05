@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "aos": "^2.3.4",
+    "graphql-request": "^7.3.5",
     "gsap": "^3.13.0",
     "jquery": "^3.7.1",
     "magnific-popup": "^1.2.0",
