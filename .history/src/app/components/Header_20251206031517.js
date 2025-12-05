@@ -91,26 +91,11 @@ useEffect(() => {
   </div>
 
   <div className="dropdown-menu">
-    <Link href="https://shoba-frontend-next-js.vercel.app/projects/sky-view-stellar" className="dropdown-item">
-      Sky view stellar
-    </Link>
-    <Link href="https://shoba-frontend-next-js.vercel.app/projects/sobha-aquacrest" className="dropdown-item">
-      sobha-aquacrest
-    </Link>
-    <Link href="/product/premium-residences" className="dropdown-item">
-      Premium Residences
-    </Link>
     <Link href="/product/luxury-villas" className="dropdown-item">
       Luxury Villas
     </Link>
     <Link href="/product/waterfront-apartments" className="dropdown-item">
       Waterfront Apartments
-    </Link>
-    <Link href="/product/premium-residences" className="dropdown-item">
-      Premium Residences
-    </Link>
-    <Link href="/product/premium-residences" className="dropdown-item">
-      Premium Residences
     </Link>
     <Link href="/product/premium-residences" className="dropdown-item">
       Premium Residences
